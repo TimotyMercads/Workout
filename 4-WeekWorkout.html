@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PATHFIT 2 - Final Performance Task</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Energetic yet professional color palette */
+    --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --primary-dark: #0f172a; /* Deep slate */
+    --primary: #334155;
+    --accent: #ea580c; /* Energetic orange accent for fitness */
+    --accent-light: #ffedd5;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border: rgba(51, 65, 85, 0.15);
+    --radius: 16px;
+    --transition: all 0.3s ease;
+    --shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ═══════════════════════════ COVER PAGE ═══════════════════════════ */
+  .cover-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background: var(--primary-dark);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle background pattern/glow for the cover */
+  .cover-section::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(234, 88, 12, 0.1) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  .cover-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cover-badge {
+    background: var(--accent);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+  }
+  
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(40px, 8vw, 80px);
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+  
+  .cover-title span { color: var(--accent); }
+  
+  .cover-subtitle {
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 1.5;
+    font-size: 1.2rem;
+    color: #cbd5e1;
+  }
+  
+  .cover-divider {
+    width: 60px;
+    height: 4px;
+    background: var(--accent);
+    margin: 0 auto 4rem;
+    border-radius: 2px;
+  }
+  
+  .submission-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  
+  .sub-block { flex: 1; min-width: 250px; }
+  .sub-block.left { text-align: left; }
+  .sub-block.right { text-align: right; }
+
+  .sub-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .sub-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: white;
+    font-weight: 700;
+    display: block;
+  }
+
+  .sub-role {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .cover-tagline {
+    margin-top: 5rem;
+    letter-spacing: 0.3em;
+    word-spacing: 5px;
+    font-size: 0.8rem;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: bounce 2s infinite;
+    text-decoration: none;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+    40% { transform: translateY(-10px) translateX(-50%); }
+    60% { transform: translateY(-5px) translateX(-50%); }
+  }
+
+  /* ═══════════════════════════ APP HEADER & NAV ═══════════════════════════ */
+  header {
+    background-color: var(--bg-card);
+    padding: 1rem 0 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 15px -5px rgba(0,0,0,0.05);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-tabs-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-tabs-container::-webkit-scrollbar { display: none; }
+
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: max-content;
+    margin: 0 auto;
+    padding-bottom: 5px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { color: var(--primary); }
+  .tab-btn.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ═══════════════════════════ MAIN CONTENT ═══════════════════════════ */
+  main {
+    max-width: 1000px;
+    margin: 3rem auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .tab-content { display: none; animation: fadeIn 0.4s ease; }
+  .tab-content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px -8px rgba(15, 23, 42, 0.2);
+  }
+
+  h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--primary-dark); margin-bottom: 1rem; }
+  h3 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--primary); font-weight: 600; }
+  .section-desc { margin-bottom: 2rem; color: var(--text-muted); font-size: 1.05rem; }
+
+  /* Accordions for Workouts */
+  .accordion-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 10px -5px rgba(0,0,0,0.05);
+  }
+
+  .accordion-header {
+    width: 100%;
+    text-align: left;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+  }
+
+  .accordion-header:hover { background: rgba(51, 65, 85, 0.05); }
+  .accordion-icon { font-size: 1.5rem; font-weight: 300; transition: transform 0.3s; color: var(--primary); }
+  .accordion-item.active .accordion-icon { transform: rotate(45deg); color: var(--accent); }
+  
+  .accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background: transparent;
+  }
+  
+  .accordion-item.active .accordion-body { max-height: 600px; }
+
+  .workout-list { list-style: none; padding: 0.5rem 1.5rem 1rem; }
+  .workout-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-size: 0.95rem;
+  }
+  .workout-list li:last-child { border-bottom: none; }
+  
+  .badge {
+    background: var(--accent-light);
+    color: #c2410c;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  
+  .badge.rest { background: #e0f2fe; color: #0369a1; }
+  .badge.active { background: #dcfce7; color: #166534; }
+
+  /* Nutrition specific */
+  .meal-type { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 0.5rem; }
+  .macro-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .macro-tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    background: rgba(51, 65, 85, 0.1);
+    color: var(--primary-dark);
+    font-weight: 500;
+  }
+
+  /* ═══════════════════════════ MOBILE RESPONSIVE ═══════════════════════════ */
+  @media (max-width: 768px) {
+    .cover-section { padding: 1.5rem; }
+    .sub-block.left, .sub-block.right { text-align: center; }
+    .submission-container { flex-direction: column; gap: 30px; align-items: center; }
+    .cover-divider { margin: 0 auto 2rem; }
+    
+    .nav-tabs { justify-content: flex-start; }
+    main { padding: 0 1rem 3rem; margin: 1.5rem auto; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
+    .card { padding: 1.25rem; }
+    h2 { font-size: 1.8rem; }
+    .accordion-header { padding: 1rem; font-size: 1rem; }
+    .workout-list { padding: 0.5rem 1rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+  <section class="cover-section">
+    <div class="cover-content">
+      <div class="cover-badge">PATHFIT 2</div>
+      
+      <h1 class="cover-title">
+        Final Performance Task<br>
+        <span>4-Week Workout Plan</span>
+      </h1>
+      
+      <p class="cover-subtitle">
+        4-Week total body workout plan and nutrition plan (Fitness Goal)
+      </p>
+      
+      <div class="cover-divider"></div>
+      
+      <div class="submission-container">
+        
+        <div class="sub-block left">
+          <span class="sub-label">Submitted by:</span>
+          <strong class="sub-name">Rosaceña, Princess Jenia M.</strong>
+        </div>
+    
+        <div class="sub-block right">
+          <span class="sub-label">Submitted to:</span>
+          <strong class="sub-name">PILAPIL, GINA FE</strong>
+          <span class="sub-role">PATHFIT 2 INSTRUCTOR</span>
+        </div>
+        
+      </div>
+    
+      <p class="cover-tagline">
+        EXERCISE · MINDFULNESS · FILIPINO NUTRITION · RECOVERY
+      </p>
+    </div>
+
+    <a href="#app-start" class="scroll-indicator">Scroll Down ↓</a>
+  </section>
+
+  <header id="app-start">
+    <div class="nav-tabs-container">
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-target="overview">Overview</button>
+        <button class="tab-btn" data-target="workouts">Weekly Workouts</button>
+        <button class="tab-btn" data-target="nutrition">Fitness Fuel</button>
+        <button class="tab-btn" data-target="tips">Recovery & Tips</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="overview" class="tab-content active">
+      <h2>Holistic General Fitness</h2>
+      <p class="section-desc">
+        True physical fitness goes beyond just lifting weights or running. This project focuses on the core pillars of physical health: Cardiovascular Endurance, Muscular Strength, Flexibility, and Body Composition, fueled by a balanced Filipino diet.
+      </p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>💪 Muscular Strength & Endurance</h3>
+          <p>Bodyweight and light resistance exercises designed to build lean muscle mass, increase bone density, and improve daily functional movements.</p>
+        </div>
+        <div class="card">
+          <h3>🫀 Cardiovascular Health</h3>
+          <p>A mix of Low-Intensity Steady State (LISS) and interval training to strengthen the heart, improve lung capacity, and boost stamina.</p>
+        </div>
+        <div class="card">
+          <h3>🧘 Flexibility & Mobility</h3>
+          <p>Dynamic and static stretching routines incorporated to improve joint range of motion, prevent injuries, and correct posture.</p>
+        </div>
+        <div class="card">
+          <h3>🍚 Performance Nutrition</h3>
+          <p>Utilizing macro-balanced, local Filipino ingredients to provide sustained energy for workouts and the necessary proteins for muscle recovery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workouts" class="tab-content">
+      <h2>Interactive Training Routine (7 Days/Week)</h2>
+      <p class="section-desc">A structured progression of strength, cardio, and mobility. Tap on a day to reveal your specific exercises.</p>
+
+      <div style="margin-bottom: 2.5rem;">
+        <h3>Week 1: Fitness Foundation</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Goal: Awaken the muscles, learn proper form, and build baseline cardiovascular endurance.</p>
+        <div class="accordion">
+          <div class="accordion-item"><button class="accordion-header"><span>Monday: Full Body Strength</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Bodyweight Squats</span> <span class="badge">3×10 reps</span></li>
+              <li><span>Push-Ups (Knees or Toes)</span> <span class="badge">3×8 reps</span></li>
+              <li><span>Glute Bridges</span> <span class="badge">3×12 reps</span></li>
+              <li><span>Forearm Plank</span> <span class="badge">3×20 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Tuesday: LISS Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Brisk Walking or Cycling</span> <span class="badge">25 min</span></li>
+              <li><span>Conversational Pace</span> <span class="badge active">Moderate Intensity</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Wednesday: Mobility & Flexibility</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Arm Circles & Torso Twists</span> <span class="badge">2×10 each</span></li>
+              <li><span>Cat-Cow Stretch</span> <span class="badge">3×10 reps</span></li>
+              <li><span>Hamstring & Calf Stretches</span> <span class="badge active">Hold 30s each</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Thursday: Lower Body & Core</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Reverse Lunges</span> <span class="badge">3×10/leg</span></li>
+              <li><span>Calf Raises</span> <span class="badge">3×15 reps</span></li>
+              <li><span>Bird-Dog (Core)</span> <span class="badge">3×10/side</span></li>
+              <li><span>Crunches</span> <span class="badge">3×15 reps</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Friday: Elevated Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Jogging, Swimming, or Fast Walk</span> <span class="badge">30 min</span></li>
+              <li><span>Maintain consistent breathing</span> <span class="badge">Pacing</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Saturday: Functional Recreation</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Basketball, Badminton, or Hiking</span> <span class="badge active">45 min</span></li>
+              <li><span>Focus on agility and enjoyment</span> <span class="badge">Play</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Sunday: Active Rest</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>No Formal Exercise</span> <span class="badge rest">Rest Day</span></li>
+              <li><span>Light Walking or Yoga</span> <span class="badge">Optional</span></li>
+              <li><span>Meal Prep for the Week</span> <span class="badge">Nutrition</span></li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 2.5rem;">
+        <h3>Week 2: Progression & Volume</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Goal: Slightly increase repetitions and cardio duration to stimulate adaptation.</p>
+        <div class="accordion">
+          <div class="accordion-item"><button class="accordion-header"><span>Monday: Full Body Strength</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Goblet Squats (Use a water jug/dumbbell)</span> <span class="badge">3×12 reps</span></li>
+              <li><span>Push-Ups</span> <span class="badge">3×10 reps</span></li>
+              <li><span>Dumbbell / Bag Rows</span> <span class="badge">3×12 reps</span></li>
+              <li><span>Plank Hold</span> <span class="badge">3×30 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Tuesday: Interval Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Warm-up Walk</span> <span class="badge">5 min</span></li>
+              <li><span>Jog 2 mins / Walk 1 min</span> <span class="badge active">Repeat x8</span></li>
+              <li><span>Cool-down Walk</span> <span class="badge">5 min</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Wednesday: Core & Flow</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Dead Bugs</span> <span class="badge">3×10/side</span></li>
+              <li><span>Russian Twists</span> <span class="badge">3×15 reps</span></li>
+              <li><span>Full Body Yoga Flow</span> <span class="badge active">15 min</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Thursday: Upper Body Focus</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Incline Push-Ups (hands on chair)</span> <span class="badge">3×12 reps</span></li>
+              <li><span>Overhead Press (water bottles/weights)</span> <span class="badge">3×12 reps</span></li>
+              <li><span>Tricep Dips (using a chair)</span> <span class="badge">3×10 reps</span></li>
+              <li><span>Superman Holds (Lower Back)</span> <span class="badge">3×15 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Friday: Steady State Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Continuous Jogging or Cycling</span> <span class="badge">35 min</span></li>
+              <li><span>Keep heart rate elevated but steady</span> <span class="badge">Endurance</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Saturday: Agility & Sports</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Zumba, Dancing, or Team Sports</span> <span class="badge active">45-60 min</span></li>
+              <li><span>Focus on lateral movements</span> <span class="badge">Agility</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Sunday: Recovery</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Complete Physical Rest</span> <span class="badge rest">Rest Day</span></li>
+              <li><span>Deep Tissue Massage/Foam Roll</span> <span class="badge">Recovery</span></li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 2.5rem;">
+        <h3>Week 3: Progressive Overload</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Goal: Challenge the muscles with more sets and push cardiovascular limits.</p>
+        <div class="accordion">
+          <div class="accordion-item"><button class="accordion-header"><span>Monday: Strength (Hypertrophy Focus)</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Squats (Slow descent, 3 seconds down)</span> <span class="badge">4×10 reps</span></li>
+              <li><span>Standard Push-Ups</span> <span class="badge">4×10 reps</span></li>
+              <li><span>Single-Leg Glute Bridges</span> <span class="badge">3×10/leg</span></li>
+              <li><span>Plank with Shoulder Taps</span> <span class="badge">3×40 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Tuesday: Sustained Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Jogging, Rowing, or Cycling</span> <span class="badge">40 min</span></li>
+              <li><span>Jumping Jacks</span> <span class="badge active">3×45 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Wednesday: Deep Stretching</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Dynamic Warm-up</span> <span class="badge active">5 min</span></li>
+              <li><span>Pigeon Pose & Hip Openers</span> <span class="badge">Hold 60s/leg</span></li>
+              <li><span>Child's Pose to Cobra Flow</span> <span class="badge">10 reps</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Thursday: Circuit Training</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Perform 4 rounds with minimal rest:</span> <span class="badge active">Circuit</span></li>
+              <li><span>Jumping Squats</span> <span class="badge">12 reps</span></li>
+              <li><span>Mountain Climbers</span> <span class="badge">20/leg</span></li>
+              <li><span>Walking Lunges</span> <span class="badge">20 steps</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Friday: HIIT Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Sprint 30 seconds / Walk 60 seconds</span> <span class="badge">Repeat x10</span></li>
+              <li><span>High Knees</span> <span class="badge">3×30 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Saturday: Endurance Trek</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Long Outdoor Hike or Walk</span> <span class="badge active">60-90 min</span></li>
+              <li><span>Sustained lower-intensity effort</span> <span class="badge">Stamina</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Sunday: Rest & Reset</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Muscle Recovery</span> <span class="badge rest">Rest Day</span></li>
+              <li><span>Hydrate well to flush lactic acid</span> <span class="badge">Wellness</span></li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 2.5rem;">
+        <h3>Week 4: Peak Performance</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Goal: Combine strength and endurance to test the fitness adaptations you've built.</p>
+        <div class="accordion">
+          <div class="accordion-item"><button class="accordion-header"><span>Monday: Advanced Full Body</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Squat to Overhead Press (Thrusters)</span> <span class="badge">4×12 reps</span></li>
+              <li><span>Push-Ups (To failure)</span> <span class="badge">3 sets</span></li>
+              <li><span>Bent-Over Rows</span> <span class="badge">4×12 reps</span></li>
+              <li><span>Plank Hold</span> <span class="badge">3×60 sec</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Tuesday: Cardio Mix</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Continuous Jogging</span> <span class="badge">20 min</span></li>
+              <li><span>Immediately into Jump Rope / Burpees</span> <span class="badge">5 min</span></li>
+              <li><span>Cool Down Walk</span> <span class="badge">10 min</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Wednesday: Pilates / Core Stability</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Bicycle Crunches</span> <span class="badge active">3×20/side</span></li>
+              <li><span>Pilates Hundreds</span> <span class="badge">1 set</span></li>
+              <li><span>Side Plank Hold</span> <span class="badge">3×30s/side</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Thursday: Explosive Power</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Plyometric Jump Squats</span> <span class="badge">4×10 reps</span></li>
+              <li><span>Explosive Push-Ups (Push off floor)</span> <span class="badge">4×8 reps</span></li>
+              <li><span>Alternating Jump Lunges</span> <span class="badge">3×10/leg</span></li>
+              <li><span>V-Ups (Core)</span> <span class="badge">3×15 reps</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Friday: Final State Cardio</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Run, Swim, or Cycle (Best Effort)</span> <span class="badge">45 min</span></li>
+              <li><span>Aim for your longest distance yet</span> <span class="badge">Endurance</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Saturday: Celebration Workout</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Do your favorite physical activity</span> <span class="badge active">60 min</span></li>
+              <li><span>Reflect on how much stronger you feel!</span> <span class="badge">Victory</span></li>
+            </ul></div>
+          </div>
+          <div class="accordion-item"><button class="accordion-header"><span>Sunday: Complete Recovery</span><span class="accordion-icon">+</span></button>
+            <div class="accordion-body"><ul class="workout-list">
+              <li><span>Celebrate Your Consistency</span> <span class="badge rest">Rest Day</span></li>
+              <li><span>Assess fitness improvements & set new goals</span> <span class="badge">Reflect</span></li>
+            </ul></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="nutrition" class="tab-content">
+      <h2>Filipino Fitness Fuel</h2>
+      <p class="section-desc">Proper fitness requires proper fuel. This plan uses local Filipino staples to provide complex carbohydrates for energy, and lean proteins for muscle repair.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <span class="meal-type">Pre-Workout Breakfast</span>
+          <h4>Arroz Caldo with Malunggay</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Rice porridge provides easily digestible complex carbs to top up glycogen stores before a morning workout.</p>
+          <div class="macro-tags">
+            <span class="macro-tag">Complex Carbs</span>
+            <span class="macro-tag">Workout Energy</span>
+          </div>
+        </div>
+        
+        <div class="card">
+          <span class="meal-type">Post-Workout Lunch</span>
+          <h4>Sinigang na Salmon sa Miso</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Salmon provides high-quality protein to repair torn muscle fibers and Omega-3s to reduce joint inflammation.</p>
+          <div class="macro-tags">
+            <span class="macro-tag">Muscle Repair</span>
+            <span class="macro-tag">Omega-3</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="meal-type">Plant-Based Dinner</span>
+          <h4>Ginisang Monggo (Mung Beans)</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">An excellent source of plant-based protein, dietary fiber, and iron to carry oxygen in the blood during cardio.</p>
+          <div class="macro-tags">
+            <span class="macro-tag">Plant Protein</span>
+            <span class="macro-tag">High Fiber</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="meal-type">Fast Recovery Snack</span>
+          <h4>Saba Banana & Buko Juice</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Nature's sports drink. Replenishes lost electrolytes (potassium/sodium) and provides fast carbs immediately after exercise.</p>
+          <div class="macro-tags">
+            <span class="macro-tag">Electrolytes</span>
+            <span class="macro-tag">Potassium</span>
+          </div>
+        </div>
+        
+        <div class="card">
+          <span class="meal-type">Lean Dinner Alternative</span>
+          <h4>Tinolang Manok (Chicken Breast)</h4>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">Using lean chicken breast maximizes protein intake without excess saturated fats, supporting lean body mass.</p>
+          <div class="macro-tags">
+            <span class="macro-tag">Lean Protein</span>
+            <span class="macro-tag">Vitamins</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tips" class="tab-content">
+      <h2>Recovery & Lifestyle Tips</h2>
+      <p class="section-desc">You don't get stronger while working out; you get stronger while recovering. Optimize your downtime.</p>
+      
+      <div class="grid-2">
+        <div class="card">
+          <h3>💧 Optimal Hydration</h3>
+          <ul style="list-style: none;">
+            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);"><strong>Drink 3-4 liters daily.</strong> Muscles are 75% water. Dehydration leads to cramps and decreased strength output.</li>
+            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);"><strong>Pre-Workout:</strong> Drink 500ml of water 2 hours before exercising.</li>
+            <li><strong>Post-Workout:</strong> Weigh yourself before and after sweaty cardio sessions; drink water to replace the lost weight.</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>🌙 Sleep & Muscle Growth</h3>
+          <ul style="list-style: none;">
+            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);"><strong>7–9 hours of sleep.</strong> The majority of Human Growth Hormone (HGH) is released during deep sleep, which rebuilds muscles.</li>
+            <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);"><strong>Protein before bed.</strong> A light protein snack (like a boiled egg) provides amino acids while you sleep.</li>
+            <li><strong>Active Recovery.</strong> Don't sit all day on rest days. Light walking helps flush lactic acid from sore muscles.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tab Navigation Logic
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        btn.classList.add('active');
+        const targetId = btn.getAttribute('data-target');
+        document.getElementById(targetId).classList.add('active');
+        
+        // Scroll the clicked tab into view on mobile
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        
+        // Optionally, scroll up to the top of the tabs when a new tab is clicked
+        const headerOffset = document.getElementById('app-start').offsetTop;
+        window.scrollTo({ top: headerOffset, behavior: 'smooth' });
+      });
+    });
+
+    // Accordion Logic
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        item.classList.toggle('active');
+        
+        const allItems = document.querySelectorAll('.accordion-item');
+        allItems.forEach(otherItem => {
+          if(otherItem !== item) {
+            otherItem.classList.remove('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
